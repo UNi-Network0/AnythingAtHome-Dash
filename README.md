@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# AnythingAtHome-Dash
-=======
-<<<<<<< HEAD
-# AnythingAtHome-Dash
-=======
 # AnyThing@Home-Dash
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -39,5 +33,3 @@ npm run build
 ```sh
 npm run lint
 ```
->>>>>>> 85a0d44 (change to ant design)
->>>>>>> e909999 (change to ant design)
