@@ -17,7 +17,13 @@
             <a :href="record.sponsorUrl" target="_blank">{{ record.sponsor }}</a>
           </template>
         </a-table-column>
-        <a-table-column title="状态" data-index="status" />
+        <a-table-column title="状态" key="status" >
+          <template #default="{ record }">
+            <a-tag v-if="record.status === '离线'" :bordered="false" color="error" class="statustag">离线</a-tag>
+            <a-tag v-else-if="record.status === '正常工作'" :bordered="false" color="success" class="statustag">正常</a-tag>
+            <a-tag v-else-if="record.status === '被封禁'" :bordered="false" color="warning" class="statustag">封禁</a-tag>
+          </template>
+        </a-table-column>
       </a-table>
     </div>
   </template>
@@ -49,32 +55,41 @@
   
   async function fetchData() {
     try {
-      const response = await axios.get('https://saltwood.top:9393/93AtHome/rank');
+      const response = await axios.get('http://home.5k.work:15105/api/rank');
       const data = response.data;
-  
+
       tableData.value = data.map((item, index) => {
         let hits = '0';
         let traffic = '0';
         let status = '';
-  
-        hits = formatCommas(item.hits || 0);
-        traffic = formatUnits(item.traffic || 0);
-        status = item.isOnline ? '正常工作' : (item.isBanned ? '被封禁' : '离线');
-  
+
+
+        hits = formatCommas(item.metric.request || 0);
+        traffic = formatUnits(item.metric.traffic || 0);
+
+
+        if (item.isEnable) {
+          status = '正常工作';
+        } else if (item.isBanned) {
+          status = '被封禁';
+        } else {
+          status = '离线';
+        }
+
         return {
           rank: index + 1,
-          clusterName: item.clusterName || 'null',
+          clusterName: item.name || 'null',
           hits,
           traffic,
           status,
-          sponsor: item.sponsor || 'null',
-          sponsorUrl: item.sponsorUrl || 'null',
-          ownerName: item.ownerName || 'null'
+          sponsor: 'null', 
+          sponsorUrl: 'null', 
+          ownerName: 'null' 
         };
       });
     } catch (error) {
-        message.error('拉取数据失败：' + error,5);
-        console.error('Failed to fetch data:', error);
+      message.error('拉取数据失败：' + error, 5);
+      console.error('Failed to fetch data:', error);
     }
   }
   
@@ -90,6 +105,10 @@
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .statustag{
+    font-size: 14px;
+    padding: 5px 10px
   }
   </style>
   
